@@ -2,6 +2,7 @@ package com.udacity.gradle.builditbigger;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
@@ -9,8 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.udacity.gradle.builditbigger.paid.AdPolicy;
 
 
 /**
@@ -19,7 +19,8 @@ import com.google.android.gms.ads.AdView;
 public class MainActivityFragment extends Fragment {
 
     Button jokeButton;
-    AdView adView;
+    AdPolicy adPolicy;
+    Activity application;
 
     public MainActivityFragment() {
     }
@@ -28,10 +29,10 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
-        final Activity application = getActivity();
-
+        application = getActivity();
+        adPolicy = new AdPolicy();
         jokeButton = root.findViewById(R.id.joke_button);
-        adView = root.findViewById(R.id.adView);
+
         jokeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,17 +40,13 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-        if(BuildConfig.FLAVOR.equals("free")) {
-            // Create an ad request. Check logcat output for the hashed device ID to
-            // get test ads on a physical device. e.g.
-            // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
-            AdRequest adRequest = new AdRequest.Builder()
-                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                    .build();
-            adView.loadAd(adRequest);
-        }else{
-            adView.setVisibility(View.GONE);
-        }
         return root;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        adPolicy.implementAds(view);
     }
 }
